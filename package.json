@@ -1,0 +1,23 @@
+{
+  "name": "zevent-discord-bot",
+  "version": "1.0.0",
+  "description": "A useful and user-friendly Discord bot created to follow the Z-Event while playing",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Z Event",
+    "glazk0",
+    "Discord",
+    "Bot"
+  ],
+  "author": "glazk0#7861",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.24.0",
+    "chalk": "^4.1.2",
+    "discord.js": "^13.2.0",
+    "dotenv": "^10.0.0"
+  }
+}
