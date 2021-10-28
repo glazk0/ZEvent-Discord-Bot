@@ -92,10 +92,10 @@ class Streamers extends Interaction {
 
                     streamers.live.forEach((streamer) => {
                         if (streamer.online) {
-                            streamersCount += streamer;
                             streamersArray.push({
                                 label: streamer.display,
-                                value: streamer.twitch
+                                value: streamer.twitch,
+                                emoji: '🎥'
                             });
                         }
                         viewersCount += streamer.viewersAmount.number;
@@ -105,12 +105,12 @@ class Streamers extends Interaction {
                         .addComponents(
                             new MessageSelectMenu()
                             .setCustomId('select_streamer')
-                            .setPlaceholder('Choose a streamer')
+                            .setPlaceholder('📌 Choose a streamer')
                             .addOptions(streamersArray)
                         );
 
                     let description =
-                        `**${streamersCount.length}** streamers are streaming\n**${viewersCount.toLocaleString('en-US')}** users are watching\n\n` +
+                        `**${streamers.live.filter(streamer => streamer.online).length}** streamers are streaming\n**${viewersCount.toLocaleString('en-US')}** users are watching\n\n` +
                         streamers.live.filter(streamer => streamer.online).sort((a, b) => b.viewersAmount.number - a.viewersAmount.number).map((r) => r)
                         .map((r, i) => `**${i + 1}** - ${this.client.modules.createLink(r.display, r.twitch, r.game)}`)
                         .slice(0, 10)
@@ -118,6 +118,11 @@ class Streamers extends Interaction {
 
                     embed.setTitle(`Page: ${page}/${Math.ceil(streamers.live.filter(streamer => streamer.online).length/10)}`)
                         .setDescription(description);
+
+                    await interaction.reply({
+                        content: `Showing a list of **${streamers.live.filter(streamer => streamer.online).length}** streamer(s)`,
+                        ephemeral: true
+                    });
 
                     const streamersEmbed = await interaction.channel.send({
                         embeds: [embed],

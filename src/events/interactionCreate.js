@@ -6,8 +6,6 @@ const {
     MessageButton
 } = require('discord.js');
 
-const wait = require('util').promisify(setTimeout);
-
 module.exports = class {
 
     constructor(client) {
@@ -96,8 +94,9 @@ module.exports = class {
                 });
 
                 if (neededPermissions.length > 0) {
-                    return interaction.sendTranslate('misc:MISSING_BOT_PERMS', {
-                        list: neededPermissions.map((p) => `\`${p}\``).join(', ')
+                    return interaction.reply({
+                        content: `I need the following permissions to execute this command: ${neededPermissions.map((p) => `\`${p}\``).join(', ')}`,
+                        ephemeral: true
                     });
                 }
 
@@ -110,8 +109,9 @@ module.exports = class {
                 });
 
                 if (neededPermissions.length > 0) {
-                    return interaction.sendTranslate('misc:MISSING_MEMBER_PERMS', {
-                        list: neededPermissions.map((p) => `\`${p}\``).join(', ')
+                    return interaction.reply({
+                        content: `You need the following permissions to execute this command: ${neededPermissions.map((p) => `\`${p}\``).join(', ')}`,
+                        ephemeral: true
                     });
                 }
 
@@ -125,8 +125,9 @@ module.exports = class {
                 const time = userCooldown[command.help.name] || 0;
 
                 if (time && (time > Date.now())) {
-                    return interaction.sendTranslate('misc:COOLDOWNED', {
-                        seconds: Math.ceil((time - Date.now()) / 1000)
+                    return interaction.reply({
+                        content: `You must wait **${Math.ceil((time - Date.now()) / 1000)}** second(s) to be able to run this command again.`,
+                        ephemeral: true
                     });
                 }
 
