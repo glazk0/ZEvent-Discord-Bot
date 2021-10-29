@@ -44,7 +44,7 @@ module.exports = class {
                         .addComponents(new MessageButton()
                             .setLabel('Make a donation')
                             .setStyle('LINK')
-                            .setURL(streamer.donationUrl));
+                            .setURL(streamer.donationUrl || streamers.globalDonationUrl));
 
                     embed
                         .setTitle(streamer.display)
@@ -57,10 +57,9 @@ module.exports = class {
                         }, {
                             name: 'Current viewers',
                             value: streamer.viewersAmount.formatted
-                        })
-                        .setFooter(`Requested by: ${interaction.user.tag}`);
+                        });
 
-                    await interaction.channel.send({
+                    await interaction.followUp({
                         embeds: [embed],
                         components: [button]
                     });

@@ -81,11 +81,9 @@ class Streamers extends Interaction {
 
                 case 'list':
 
-                    let i0 = 0;
-                    let i1 = 10;
-                    let page = 1;
+                    // Disclaimer ce code est caca mais flemme <3
 
-                    let streamersCount = 0;
+                    let page = 1;
                     let viewersCount = 0;
 
                     const streamersArray = [];
@@ -94,7 +92,7 @@ class Streamers extends Interaction {
                         if (streamer.online) {
                             streamersArray.push({
                                 label: streamer.display,
-                                value: streamer.twitch,
+                                value: streamer.display,
                                 emoji: '🎥'
                             });
                         }
@@ -106,100 +104,59 @@ class Streamers extends Interaction {
                             new MessageSelectMenu()
                             .setCustomId('select_streamer')
                             .setPlaceholder('📌 Choose a streamer')
-                            .addOptions(streamersArray)
+                            .addOptions(streamersArray.splice(0, 25))
                         );
 
                     let description =
-                        `**${streamers.live.filter(streamer => streamer.online).length}** streamers are streaming\n**${viewersCount.toLocaleString('en-US')}** users are watching\n\n` +
+                        `**${streamers.live.filter(streamer => streamer.online).length}** streamers\n**${viewersCount.toLocaleString('en-US')}** users are watching\n\n` +
                         streamers.live.filter(streamer => streamer.online).sort((a, b) => b.viewersAmount.number - a.viewersAmount.number).map((r) => r)
-                        .map((r, i) => `**${i + 1}** - ${this.client.modules.createLink(r.display, r.twitch, r.game)}`)
-                        .slice(0, 10)
+                        .map((r, i) => `**${i}** - ${this.client.modules.createLink(r.display, r.twitch, r.game)}`)
+                        .slice(0, 25)
                         .join('\n');
 
-                    embed.setTitle(`Page: ${page}/${Math.ceil(streamers.live.filter(streamer => streamer.online).length/10)}`)
+                    embed.setTitle(`Page: ${page}/${Math.ceil(streamers.live.filter(streamer => streamer.online).length/25)}`)
                         .setDescription(description);
 
                     await interaction.reply({
-                        content: `Showing a list of **${streamers.live.filter(streamer => streamer.online).length}** streamer(s)`,
-                        ephemeral: true
+                        content: `Showing a list of **${streamers.live.filter(streamer => streamer.online).length}** streamer(s)`
                     });
 
-                    const streamersEmbed = await interaction.channel.send({
-                        embeds: [embed],
-                        components: [streamersList]
-                    });
+                    if (streamersArray > 25) {
 
-                    const collector = streamersEmbed.createMessageComponentCollector((component, user) => user.id === interaction.member.id);
+                        await interaction.followUp({
+                            embeds: [embed],
+                            components: [streamersList]
+                        });
 
-                    collector.on('collect', async (component) => {
+                        const secondsStreamersList = new MessageActionRow()
+                            .addComponents(
+                                new MessageSelectMenu()
+                                .setCustomId('select_streamer')
+                                .setPlaceholder('📌 Choose a streamer')
+                                .addOptions(streamersArray.splice(0, 25))
+                            );
 
-                        if (component.customId === 'left') {
+                        let description =
+                            `**${streamers.live.filter(streamer => streamer.online).length}** streamers are streaming\n**${viewersCount.toLocaleString('en-US')}** users are watching\n\n` +
+                            streamers.live.filter(streamer => streamer.online).sort((a, b) => b.viewersAmount.number - a.viewersAmount.number).map((r) => r)
+                            .map((r, i) => `**${i + 1}** - ${this.client.modules.createLink(r.display, r.twitch, r.game)}`)
+                            .slice(25, 50)
+                            .join('\n');
 
-                            await component.deferUpdate();
+                        embed.setTitle(`Page: ${page}/${Math.ceil(streamers.live.filter(streamer => streamer.online).length/25)}`)
+                            .setDescription(description);
 
-                            i0 = i0 - 10;
-                            i1 = i1 - 10;
-                            page = page - 1;
+                        await interaction.followUp({
+                            embeds: [embed],
+                            components: [secondsStreamersList]
+                        });
 
-                            if (i0 < 0) {
-                                return streamersEmbed.delete();
-                            }
-                            if (!i0 || !i1) {
-                                return streamersEmbed.delete();
-                            }
-
-                            let description =
-                                `**${streamersCount.length}** streamers are streaming\n**${viewersCount.toLocaleString('en-US')}** users are watching\n\n` +
-                                streamers.live.filter(streamer => streamer.online).sort((a, b) => b.viewersAmount.number - a.viewersAmount.number).map((r) => r)
-                                .map((r, i) => `**${i + 1}** - ${this.client.modules.createLink(r.display, r.twitch, r.game)}`)
-                                .slice(i0, i1)
-                                .join('\n');
-
-                            embed.setTitle(`Page: ${page}/${Math.ceil(streamers.live.filter(streamer => streamer.online).length/10)}`)
-                                .setDescription(description);
-
-                            streamersEmbed.edit({
-                                embeds: [embed],
-                                components: [streamersList]
-                            });
-                        }
-
-                        if (component.customId === 'right') {
-
-                            await component.deferUpdate();
-
-                            i0 = i0 + 10;
-                            i1 = i1 + 10;
-                            page = page + 1;
-
-                            if (i1 > streamer.length + 10) {
-                                return streamersEmbed.delete();
-                            }
-
-                            if (!i0 || !i1) {
-                                return streamersEmbed.delete();
-                            }
-
-                            let description =
-                                `**${streamersCount.length}** streamers are streaming\n**${viewersCount.toLocaleString('en-US')}** users are watching\n\n` +
-                                streamers.live.filter(streamer => streamer.online).sort((a, b) => b.viewersAmount.number - a.viewersAmount.number).map((r) => r)
-                                .map((r, i) => `**${i + 1}** - ${this.client.modules.createLink(r.display, r.twitch, r.game)}`)
-                                .slice(i0, i1)
-                                .join('\n');
-
-                            embed.setTitle(`Page: ${page}/${Math.ceil(streamers.live.filter(streamer => streamer.online).length/10)}`)
-                                .setDescription(description);
-
-                            streamersEmbed.edit({
-                                embeds: [embed],
-                                components: [streamersList]
-                            });
-                        }
-
-                        if (component.customId === 'cancel') {
-                            return streamersEmbed.delete();
-                        }
-                    });
+                    } else {
+                        await interaction.followUp({
+                            embeds: [embed],
+                            components: [streamersList]
+                        });
+                    }
                     break;
             }
         } else if (request.response && request.response.status === 404) {
