@@ -26,7 +26,7 @@ class Info extends Interaction {
 
         const button = new MessageActionRow()
             .addComponents(new MessageButton()
-                .setLabel(interaction.translate('button:INVITE_ME'))
+                .setLabel('Invite me')
                 .setStyle('LINK')
                 .setURL(this.client.config.inviteURL.replace('{{id}}', this.client.user.id)));
 
@@ -47,10 +47,6 @@ class Info extends Interaction {
             }, {
                 name: 'Using',
                 value: `Discord.js : v**${version}**\nNodejs : v**${process.versions.node}**`,
-                inline: false,
-            }, {
-                name: 'Uptime',
-                value: `Online for ${interaction.convertTime(Date.now() + this.client.uptime, 'from', true)}`,
                 inline: false,
             });
 
